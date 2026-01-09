@@ -1,0 +1,88 @@
+_BASE_: "./Base-RCNN-C4.yaml"
+MODEL:
+  META_ARCHITECTURE: "DAobjTwoStagePseudoLabGeneralizedRCNN"
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+
+  MASK_ON: False
+  STUDENT_DUAL_DA: True
+#  STUDENT_DUAL_DA: False
+  BBOX_REFINE:
+    ENABLE: True
+    MODEL_CHECKPOINT: "./sam_checkpoints/sam_vit_b_01ec64.pth"
+    MODEL_TYPE: "vit_b"
+  RESNETS:
+    DEPTH: 50
+#    OUT_FEATURES: [ "res5" ]
+    OUT_FEATURES: [ "res3", "res4", "res5" ]
+    RES5_DILATION: 2
+  PROPOSAL_GENERATOR:
+    NAME: "PseudoLabRPN"
+  RPN:
+    IN_FEATURES: [ "res5" ]
+  #   POSITIVE_FRACTION: 0.25
+  ROI_HEADS:
+    NAME: "StandardROIHeadsPseudoLab"
+    IN_FEATURES: [ "res5" ]
+    LOSS: "CrossEntropy" # variant: "CrossEntropy"
+    NUM_CLASSES: 7
+  ROI_BOX_HEAD:
+    NAME: "FastRCNNConvFCHead"
+    NUM_FC: 2
+    POOLER_RESOLUTION: 7
+  CLIP:
+    USE_TEXT_EMB_CLASSIFIER: True
+#    USE_TEXT_EMB_CLASSIFIER: False
+
+SOLVER:
+  LR_SCHEDULER_NAME: "WarmupTwoStageMultiStepLR"
+  STEPS: (60000, 80000, 90000)
+  FACTOR_LIST: (1, 1, 1, 1)
+  MAX_ITER: 100000
+#  IMG_PER_BATCH_LABEL: 18
+#  IMG_PER_BATCH_UNLABEL: 18
+  IMG_PER_BATCH_LABEL: 1
+  IMG_PER_BATCH_UNLABEL: 1
+  CHECKPOINT_PERIOD: 1000
+#  BASE_LR: 0.01
+  BASE_LR: 0.001  #our method
+
+
+DATALOADER:
+  SUP_PERCENT: 100.0
+
+DATASETS:
+  CROSS_DATASET: True
+  TRAIN_LABEL: ("VisDrone_day_train",)
+  TRAIN_UNLABEL: ("VisDrone_night_train",)
+  TEST: ("VisDrone_night_val",)
+SEMISUPNET:
+  Trainer: "studentteacher"
+#  BBOX_THRESHOLD: 0.8
+#  IOU_THRESHOLD: 0.8
+  BBOX_THRESHOLD: 0.0
+  IOU_THRESHOLD: 0.0
+  TEACHER_UPDATE_ITER: 1
+#  BURN_UP_STEP: 50000
+  BURN_UP_STEP: 0
+  PROTOTYPE_LAYER: 1
+  USE_PROTOTYPE: 1
+  USE_CONTRA: 1
+
+  PROTO_WEIGHT: 1.0
+  CONTRA_WEIGHT: 1.0
+  EMA_KEEP_RATE: 0.9996
+#  UNSUP_LOSS_WEIGHT: 0.3
+  UNSUP_LOSS_WEIGHT: 1.0
+  SUP_LOSS_WEIGHT: 1.0
+  PROXY_EMA_KEEP_RATE: 0.9995
+  THR_UPDATE_ITER: 2000
+  THR_UPDATE_GAMMA: 0.05
+  DIS_TYPE: "res5"
+
+LEARNABLE_PROMPT:
+  CTX_SIZE: 8
+  CLASS: ('pedestrian', 'people', 'car', 'van', 'truck', 'bus', 'motor')
+
+TEST:
+  EVAL_PERIOD: 1000
+
