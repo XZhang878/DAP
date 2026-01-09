@@ -1,5 +1,2 @@
-Installation
-
-Python ≥ 3.6
-
-PyTorch ≥ 1.5 and torchvision that matches the PyTorch installation.
+Authors: Xiufei Zhang, Xiwen Yao, Member IEEE, Gong Cheng, Member IEEE, and Junwei Han, Fellow, IEE
+Domain Adaptation for Object Detection Based on Domain-aware Prompting in Remote Sensing Imagery
