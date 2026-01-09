@@ -2,4 +2,3 @@ Authors: Xiufei Zhang, Xiwen Yao, Member IEEE, Gong Cheng, Member IEEE, and Junw
 
 Domain Adaptation for Object Detection Based on Domain-aware Prompting in Remote Sensing Imagery
 
-SGLF implemented in PyTorch
