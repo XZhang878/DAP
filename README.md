@@ -13,3 +13,8 @@ Domain Adaptation for Object Detection Based on Domain-aware Prompting in Remote
 - PIL
 - Python ≥ 3.6
 
+## Training
+Please use the following commands for different tasks. 
+
+```
+python train_net.py
